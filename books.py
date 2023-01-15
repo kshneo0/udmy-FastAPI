@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import FastAPI
 from enum import Enum
 
@@ -20,13 +22,18 @@ class DirectionName(str, Enum):
 
 
 @app.get("/")
-async def read_all_books():
+async def read_all_books(skip_book: Optional[str] = None):
+    if skip_book:
+        new_books = BOOKS.copy()
+        del new_books[skip_book]
+        return new_books
     return BOOKS
 
 
 @app.get("/{book_name}")
 async def read_book(book_name: str):
     return BOOKS[book_name]
+
 
 @app.get("/directions/{direction_name}")
 async def get_direction(direction_name: DirectionName):
