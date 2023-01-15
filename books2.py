@@ -33,6 +33,13 @@ class Book(BaseModel):
         }
 
 
+class BookNoRating(BaseModel):
+    id: UUID
+    title: str = Field(min_length=1)
+    author: str
+    description: Optional[str] = Field(title="description of the Book", max_length=100, min_length=1)
+
+
 BOOKS = []
 
 
@@ -65,7 +72,16 @@ async def read_all_books(books_to_return: Optional[int] = None):
 
 
 @app.get("/book/{book_id}")
-async def read_book(book_id:UUID):
+async def read_book(book_id: UUID):
+    for x in BOOKS:
+        if x.id == book_id:
+            return x
+
+    raise raise_item_cannot_be_found_exception()
+
+
+@app.get("/book/rating/{book_id}", response_model=BookNoRating)
+async def read_book_no_rating(book_id: UUID):
     for x in BOOKS:
         if x.id == book_id:
             return x
@@ -80,7 +96,7 @@ async def create_book(book: Book):
 
 
 @app.put("/{book_id}")
-async def update_book(book_id:UUID, book:Book):
+async def update_book(book_id: UUID, book: Book):
     counter = 0
 
     for x in BOOKS:
