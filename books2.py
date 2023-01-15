@@ -58,10 +58,11 @@ async def read_header(random_header: Optional[str] = Header(None)):
     return {"Random-Header": random_header}
 
 
-@app.post("/books/login")
-async def book_login(username: str = Form(), password: str = Form()):
-    return {"username": username, "password": password}
-
+@app.post("/books/login/")
+async def book_login(book_id: int, username: Optional[str] = Header(None), password: Optional[str] = Header(None)):
+    if username == 'FastAPIUser' and password == 'test1234!':
+        return BOOKS[book_id]
+    return 'Invalid User'
 
 @app.get("/")
 async def read_all_books(books_to_return: Optional[int] = None):
